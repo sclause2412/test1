@@ -4,6 +4,7 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked
 echo
+sleep 10
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
     git clone https://aur.archlinux.org/yay-bin.git
@@ -22,7 +23,7 @@ yay -S --noconfirm --sudoloop openssh xlogin-git i3-wm rxvt-unicode rofi unclutt
 # grandorgue-git
 sudo systemctl enable sshd
 
-echo <<EOF >.xinitrc
+echo <<EOF >~/.xinitrc
 #!/bin/bash
 for sink in \`pactl list short sinks | cut -f 2\`; do
     pactl set-sink-volume \$sink 100%
@@ -36,16 +37,17 @@ EOF
 
 sudo usermod -aG tty grandorgue
 sudo systemctl enable xlogin@grandorgue
-PO=grep poweroff /etc/sudoers
+CMD="%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown"
+PO=$(sudo grep "$CMD" /etc/sudoers)
 if [ -z "$PO" ]; then
-    sudo echo %wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown >>/etc/sudoers
+    sudo echo "$CMD" >>/etc/sudoers
 fi
     
 echo <<EOF >~/autoshutdown
 #!/bin/bash
 idletime=$((1000*60*60*2)) # 2 hours in milliseconds
 while true; do
-    idle=`xprintidle`
+    idle=\`xprintidle\`
     echo \$idle
     if (( \$idle > \$idletime )); then
         sudo shutdown
