@@ -68,6 +68,19 @@ if [ -z "$PO" ]; then
 fi
 
 echo Writing config files
+
+if [ ! -f ~/.config/i3/config ]; then
+    cat <<EOF >~/.xinitrc
+#!/bin/bash
+exec i3-config-wizard -m win
+EOF
+    startx
+    sed -i '/^bar[[:space:]]*{/,/^}/d' ~/.config/i3/config
+    echo default_border pixel 0 >> ~/.config/i3/config
+    echo workspace_layout tabbed >> ~/.config/i3/config
+    echo exec ~/grandorgue >> ~/.config/i3/config
+fi
+
 cat <<EOF >~/.xinitrc
 #!/bin/bash
 for sink in \`pactl list short sinks | cut -f 2\`; do
@@ -107,7 +120,7 @@ fi
 if [ -d ~/GrandOrgue/Data.default ]; then
     cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
 fi
-GrandOrgue
+GrandOrgue "~/GrandOrgue/Organ packages/huber.orgue"
 if [ ! -f ~/GrandOrgueConfig.default ]; then
     cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
 fi
@@ -116,15 +129,6 @@ if [ ! -d ~/GrandOrgue/Data.default ]; then
 fi
 EOF
 chmod +x ~/grandorgue
-
-if [ ! -f ~/.config/i3/config ]; then
-    i3-config-wizard -m win
-    sed -i '/^bar[[:space:]]*{/,/^}/d' ~/.config/i3/config
-    echo default_border pixel 0 >> ~/.config/i3/config
-    echo workspace_layout tabbed >> ~/.config/i3/config
-    echo exec ~/grandorgue >> ~/.config/i3/config
-
-fi
 
 CURDIR="$(pwd)"
 cd ~
@@ -139,6 +143,7 @@ cd Organ
 zip -0 -r "../${FILENAME}" *
 cd ..
 TARGET="${USERDIR}/GrandOrgue/Organ packages/"
+mkdir -p "${TARGET}"
 if [ ! -d "${TARGET}" ]; then
     echo
     echo "Organ packages directory not found. Do you have GrandOrgue installed?"
@@ -154,9 +159,7 @@ else
 fi
 unzip -o fowviel.zip
 TARGET="${USERDIR}/.local/share/fonts/"
-if [ ! -d "${TARGET}" ]; then
-    mkdir -p "${TARGET}"
-fi
+mkdir -p "${TARGET}"
 if [ ! -d "${TARGET}" ]; then
     echo
     echo "Local font directory not found."
