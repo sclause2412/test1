@@ -120,13 +120,16 @@ fi
 if [ -d ~/GrandOrgue/Data.default ]; then
     cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
 fi
-GrandOrgue "~/GrandOrgue/Organ packages/huber.orgue"
-if [ ! -f ~/GrandOrgueConfig.default ]; then
-    cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
-fi
-if [ ! -d ~/GrandOrgue/Data.default ]; then
-    cp -f ~/GrandOrgue/Data/* ~/GrandOrgue/Data.default/
-fi
+while true; do
+    GrandOrgue "~/GrandOrgue/Organ packages/huber.orgue"
+    if [ ! -f ~/GrandOrgueConfig.default ]; then
+        cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
+    fi
+    if [ ! -d ~/GrandOrgue/Data.default ]; then
+        cp -f ~/GrandOrgue/Data/* ~/GrandOrgue/Data.default/
+    fi
+    sleep 10
+done
 EOF
 chmod +x ~/grandorgue
 
