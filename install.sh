@@ -4,7 +4,6 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked.
 echo
-sudo -v
 cat <<EOF >/tmp/sudohelper
 #!/bin/bash
 while true; do
@@ -20,7 +19,7 @@ if [ $? -ne 0 ]; then
     echo Trying to install YAY
     git clone https://aur.archlinux.org/yay-bin.git
     cd yay-bin
-    makepkg -sri
+    makepkg -sri --noconfirm
     cd ..
     rm -rf yay-bin
 fi
