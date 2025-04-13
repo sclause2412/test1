@@ -4,7 +4,16 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked.
 echo
-sleep 10
+cat <<EOF >/tmp/sudohelper
+#!/bin/bash
+while true; do
+    sudo -v
+    sleep 10
+done
+EOF
+chmod +x /tmp/sudohelper
+/tmp/sudohelper &
+
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
     echo Trying to install YAY
@@ -43,7 +52,7 @@ check_or_install xprintidle
 check_or_install zip
 check_or_install unzip
 check_or_install nano
-#check_or_install grandorgue-git
+check_or_install grandorgue-git
 
 echo Enabling SSH
 sudo systemctl enable sshd
