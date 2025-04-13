@@ -2,7 +2,7 @@
 
 echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
-echo Please provide your password whenever you are asked
+echo Please provide your password whenever you are asked.
 echo
 sleep 10
 command -v yay >/dev/null
@@ -38,7 +38,6 @@ check_or_install openssh
 check_or_install xlogin-git
 check_or_install i3-wm
 check_or_install rxvt-unicode
-check_or_install rofi
 check_or_install unclutter
 check_or_install xprintidle
 check_or_install zip
@@ -66,8 +65,6 @@ for sink in \`pactl list short sinks | cut -f 2\`; do
 done
 unclutter &
 ~/autoshutdown &
-cp -f ~/GrandOrgueConfig.default ~/GrandOrgueConfig
-cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
 exec i3
 EOF
 
@@ -85,76 +82,44 @@ done
 EOF
 chmod +x ~/autoshutdown
 
-mkdir -p ~/.config/i3
-cp /etc/i3/config ~/.config/i3/config
-
-
-exit
-
-
-Create config for i3, use Win-Key as modifier
-Win + Enter = Console
-nano .config/i3/config
-remove: bar {} section
-change: {mod}+d behavior to rofi
-add: default_border pixel 0
-add: workspace_layout tabbed
-#add: for_window [all] fullscreen enable
-add: exec GrandOrgue
-
-
-
-
-git clone https://github.com/sclause2412/grandorgue-organ-huber
-cd grandorgue-organ-huber
-chmod +x install.sh
-./install.sh
-
-
-
-
-
-sudo reboot
-
-reboot
-
-
-Set Organ settings as needed (MIDI settings, 50ms Release, -10dB Volume)
-Close GrandOrgue to save settings
-Win + Enter = Console
+cat <<EOF >~/save
+#!/bin/bash
 cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
 cp -a ~/GrandOrgue/Data ~/GrandOrgue/Data.default
-reboot
+EOF
+chmod +x ~/save
 
-
-
-
-
-sudo -s systemctl enable sshd
-
-
-
-
-
-
-
-command -v zip > /dev/null
-if [ $? -ne 0 ]; then
-    echo Command zip not found. Please make sure zip package is installed.
-    exit 1
+cat <<EOF >~/grandorgue
+#!/bin/bash
+if [ -f ~/GrandOrgueConfig.default ]; then
+    cp -f ~/GrandOrgueConfig.default ~/GrandOrgueConfig
 fi
+if [ -d ~/GrandOrgue/Data.default ]; then
+    cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
+fi
+GrandOrgue
+if [ ! -f ~/GrandOrgueConfig.default ]; then
+    cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
+fi
+if [ ! -d ~/GrandOrgue/Data.default ]; then
+    cp -f ~/GrandOrgue/Data/* ~/GrandOrgue/Data.default/
+fi
+EOF
+chmod +x ~/grandorgue
 
-command -v unzip > /dev/null
-if [ $? -ne 0 ]; then
-    echo Command unzip not found. Please make sure zip package is installed.
-    exit 1
+if [ ! -f ~/.config/i3/config ]; then
+    i3-config-wizard -m win
+    sed -i '/^bar[[:space:]]*{/,/^}/d' ~/.config/i3/config
+    echo default_border pixel 0 >> ~/.config/i3/config
+    echo workspace_layout tabbed >> ~/.config/i3/config
+    echo exec ~/grandorgue >> ~/.config/i3/config
+
 fi
 
 CURDIR="$(pwd)"
 cd ~
 USERDIR="$(pwd)"
 cd "${CURDIR}"
-
 
 FILENAME=huber.orgue
 if [ -f "${FILENAME}" ]; then
@@ -170,6 +135,7 @@ if [ ! -d "${TARGET}" ]; then
     echo "If yes, please move the file huber.orgue manually to the organ packages"
     echo "directory or use the install menu from GrandOrgue"
     echo
+    exit 1
 else
     if [ -f "${TARGET}${FILENAME}" ]; then
         rm -f "${TARGET}${FILENAME}"
@@ -186,6 +152,7 @@ if [ ! -d "${TARGET}" ]; then
     echo "Local font directory not found."
     echo "Please copy the font file Fowviel.ttf to your local font directory"
     echo
+    exit 1
 else
     FILENAME=Fowviel.ttf
     if [ -f "${TARGET}${FILENAME}" ]; then
@@ -197,3 +164,5 @@ fi
 echo
 echo DONE
 echo
+
+reboot
