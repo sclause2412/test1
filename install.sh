@@ -23,7 +23,7 @@ yay -S --noconfirm --sudoloop openssh xlogin-git i3-wm rxvt-unicode rofi unclutt
 # grandorgue-git
 sudo systemctl enable sshd
 
-echo <<EOF >~/.xinitrc
+cat <<EOF >~/.xinitrc
 #!/bin/bash
 for sink in \`pactl list short sinks | cut -f 2\`; do
     pactl set-sink-volume \$sink 100%
@@ -40,10 +40,10 @@ sudo systemctl enable xlogin@grandorgue
 CMD="%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown"
 PO=$(sudo grep "$CMD" /etc/sudoers)
 if [ -z "$PO" ]; then
-    sudo echo "$CMD" >>/etc/sudoers
+    echo "$CMD" | sudo EDITOR='tee -a' visudo
 fi
     
-echo <<EOF >~/autoshutdown
+cat <<EOF >~/autoshutdown
 #!/bin/bash
 idletime=$((1000*60*60*2)) # 2 hours in milliseconds
 while true; do
