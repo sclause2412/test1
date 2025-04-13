@@ -4,6 +4,7 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked.
 echo
+sudo -v
 cat <<EOF >/tmp/sudohelper
 #!/bin/bash
 while true; do
