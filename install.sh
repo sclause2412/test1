@@ -4,16 +4,7 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked.
 echo
-sudo echo
-cat <<EOF >/tmp/sudohelper
-#!/bin/bash
-while true; do
-    sudo -v
-    sleep 10
-done
-EOF
-chmod +x /tmp/sudohelper
-/tmp/sudohelper &
+echo '%wheel ALL=NOPASSWD: ALL' | sudo tee /etc/sudoers.d/10_shutdown
 
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
@@ -30,12 +21,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo Doing full system upgrade
-yay -Syu --noconfirm --sudoloop
+yay -Syu --noconfirm
 function check_or_install {
     ret=$(yay -Q $1)
     if [ -z "$ret" ]; then
         echo Installing $1
-        yay -S --noconfirm --sudoloop $1
+        yay -S --noconfirm $1
     fi
     ret=$(yay -Q $1)
     if [ -z "$ret" ]; then
@@ -61,11 +52,7 @@ sudo systemctl enable sshd
 echo Setting up rights
 sudo usermod -aG tty grandorgue
 sudo systemctl enable xlogin@grandorgue
-CMD="%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown"
-PO=$(sudo grep "$CMD" /etc/sudoers)
-if [ -z "$PO" ]; then
-    echo "$CMD" | sudo EDITOR='tee -a' visudo
-fi
+echo '%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown' | sudo tee /etc/sudoers.d/10_shutdown
 
 echo Writing config files
 
