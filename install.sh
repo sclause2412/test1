@@ -7,6 +7,7 @@ echo
 sleep 10
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
+    echo Trying to install YAY
     git clone https://aur.archlinux.org/yay-bin.git
     cd yay-bin
     makepkg -sri
@@ -15,14 +16,49 @@ if [ $? -ne 0 ]; then
 fi
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
-    echo yay not installed. Please install it or run this installer again.
+    echo YAY not installed. Please install it or run this installer again.
     exit 1
 fi
+echo Doing full system upgrade
 yay -Syu --noconfirm --sudoloop
-yay -S --noconfirm --sudoloop openssh xlogin-git i3-wm rxvt-unicode rofi unclutter xprintidle zip unzip nano
-# grandorgue-git
+function check_or_install {
+    ret=$(yay -Q $1)
+    if [ -z "$ret" ]; then
+        echo Installing $1
+        yay -S --noconfirm --sudoloop $1
+    fi
+    ret=$(yay -Q $1)
+    if [ -z "$ret" ]; then
+        echo Failed to install package $1
+        echo Please install the correct package manually
+        exit 1
+    fi
+}
+check_or_install openssh
+check_or_install xlogin-git
+check_or_install i3-wm
+check_or_install rxvt-unicode
+check_or_install rofi
+check_or_install unclutter
+check_or_install xprintidle
+check_or_install zip
+check_or_install unzip
+check_or_install nano
+#check_or_install grandorgue-git
+
+echo Enabling SSH
 sudo systemctl enable sshd
 
+echo Setting up rights
+sudo usermod -aG tty grandorgue
+sudo systemctl enable xlogin@grandorgue
+CMD="%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown"
+PO=$(sudo grep "$CMD" /etc/sudoers)
+if [ -z "$PO" ]; then
+    echo "$CMD" | sudo EDITOR='tee -a' visudo
+fi
+
+echo Writing config files
 cat <<EOF >~/.xinitrc
 #!/bin/bash
 for sink in \`pactl list short sinks | cut -f 2\`; do
@@ -35,14 +71,6 @@ cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
 exec i3
 EOF
 
-sudo usermod -aG tty grandorgue
-sudo systemctl enable xlogin@grandorgue
-CMD="%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown"
-PO=$(sudo grep "$CMD" /etc/sudoers)
-if [ -z "$PO" ]; then
-    echo "$CMD" | sudo EDITOR='tee -a' visudo
-fi
-    
 cat <<EOF >~/autoshutdown
 #!/bin/bash
 idletime=$((1000*60*60*2)) # 2 hours in milliseconds
