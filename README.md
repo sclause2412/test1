@@ -65,7 +65,7 @@ To save new settings just make your changes in GrandOrgue, close it and then run
 
 To access a console press `Win+Enter` on the PC or connect via ssh.
 
-If there is no need to change settings it is recommended to disconnect any keyboard, mouse or network.
+If there is no need to change settings it is recommended to disconnect any keyboard, mouse or network for security reasons.
 
 ## Organ only
 
