@@ -109,6 +109,7 @@ if [ -d ~/GrandOrgue/Data.default ]; then
 fi
 while true; do
     GrandOrgue "~/GrandOrgue/Organ packages/huber.orgue"
+    sleep 2
     if [ ! -f ~/GrandOrgueConfig.default ]; then
         cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
     fi
