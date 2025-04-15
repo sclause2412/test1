@@ -44,7 +44,7 @@ check_or_install xprintidle
 check_or_install zip
 check_or_install unzip
 check_or_install nano
-check_or_install grandorgue-git
+check_or_install grandorgue
 
 echo Enabling SSH
 sudo systemctl enable sshd
@@ -116,7 +116,7 @@ while true; do
     if [ ! -d ~/GrandOrgue/Data.default ]; then
         cp -f ~/GrandOrgue/Data/* ~/GrandOrgue/Data.default/
     fi
-    sleep 10
+    sleep 8
 done
 EOF
 chmod +x ~/grandorgue
