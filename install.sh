@@ -4,7 +4,7 @@ echo Installing GrandOrgue + Huber Organ with all needed settings.
 echo This installer is using sudo command.
 echo Please provide your password whenever you are asked.
 echo
-echo '%wheel ALL=NOPASSWD: ALL' | sudo tee /etc/sudoers.d/10_shutdown
+echo '%wheel ALL=NOPASSWD: ALL' | sudo tee /etc/sudoers.d/10_shutdown >/dev/null
 
 command -v yay >/dev/null
 if [ $? -ne 0 ]; then
@@ -52,7 +52,7 @@ sudo systemctl enable sshd
 echo Setting up rights
 sudo usermod -aG tty grandorgue
 sudo systemctl enable xlogin@grandorgue
-echo '%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown' | sudo tee /etc/sudoers.d/10_shutdown
+echo '%wheel ALL=NOPASSWD: /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown' | sudo tee /etc/sudoers.d/10_shutdown >/dev/null
 
 echo Writing config files
 
