@@ -123,6 +123,8 @@ done
 EOF
 chmod +x ~/grandorgue
 
+rm -rf ~/GrandOrgue/Cache
+
 CURDIR="$(pwd)"
 cd ~
 USERDIR="$(pwd)"
