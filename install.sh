@@ -95,6 +95,7 @@ chmod +x ~/autoshutdown
 cat <<EOF >~/save
 #!/bin/bash
 cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
+rm -rf ~/GrandOrgue/Data.default
 cp -a ~/GrandOrgue/Data ~/GrandOrgue/Data.default
 EOF
 chmod +x ~/save
@@ -105,7 +106,8 @@ if [ -f ~/GrandOrgueConfig.default ]; then
     cp -f ~/GrandOrgueConfig.default ~/GrandOrgueConfig
 fi
 if [ -d ~/GrandOrgue/Data.default ]; then
-    cp -f ~/GrandOrgue/Data.default/* ~/GrandOrgue/Data/
+    rm -rf ~/GrandOrgue/Data
+    cp -a ~/GrandOrgue/Data.default ~/GrandOrgue/Data
 fi
 while true; do
     GrandOrgue "~/GrandOrgue/Organ packages/huber.orgue"
@@ -114,7 +116,7 @@ while true; do
         cp -f ~/GrandOrgueConfig ~/GrandOrgueConfig.default
     fi
     if [ ! -d ~/GrandOrgue/Data.default ]; then
-        cp -f ~/GrandOrgue/Data/* ~/GrandOrgue/Data.default/
+        cp -a ~/GrandOrgue/Data ~/GrandOrgue/Data.default
     fi
     sleep 8
 done
